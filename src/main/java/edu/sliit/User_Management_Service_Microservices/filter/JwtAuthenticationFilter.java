@@ -1,6 +1,5 @@
 package edu.sliit.User_Management_Service_Microservices.filter;
 
-
 import edu.sliit.User_Management_Service_Microservices.utils.JWTService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -47,6 +46,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
             if (jwtService.isTokenValid(jwt, userDetails)) {
+                // Extract role and verify status
+                String role = jwtService.extractRole(jwt);
+
+                // Block unverified drivers
+                if ("DRIVER".equalsIgnoreCase(role)) {
+                    Boolean isVerified = jwtService.extractIsVerified(jwt);
+                    if (isVerified == null || !isVerified) {
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Driver account not verified by Admin.");
+                        return;
+                    }
+                }
+
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
