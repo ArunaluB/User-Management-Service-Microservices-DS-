@@ -1,6 +1,8 @@
 spring:
   application:
     name: User-Management-Service-Microservices
+  main:
+    allow-bean-definition-overriding: true
   data:
     mongodb:
       uri: mongodb+srv://arunalubamunusinghe75:Arunalu123@cluster0.n5poqff.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0

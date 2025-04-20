@@ -1,9 +1,10 @@
 package edu.sliit.User_Management_Service_Microservices.servise.impl;
 
-
+import edu.sliit.User_Management_Service_Microservices.document.Driver;
 import edu.sliit.User_Management_Service_Microservices.document.User;
 import edu.sliit.User_Management_Service_Microservices.dto.AuthenticationResponse;
 import edu.sliit.User_Management_Service_Microservices.dto.RegisterRequest;
+import edu.sliit.User_Management_Service_Microservices.repository.DriverRepository;
 import edu.sliit.User_Management_Service_Microservices.repository.UserRepository;
 import edu.sliit.User_Management_Service_Microservices.servise.AuthServise;
 import edu.sliit.User_Management_Service_Microservices.utils.JWTService;
@@ -19,18 +20,17 @@ import org.springframework.stereotype.Service;
 public class AuthServiseimpl implements AuthServise {
 
     private final UserRepository userRepository;
+    private final DriverRepository driverRepository;
     private final PasswordEncoder passwordEncoder;
     private final JWTService jwtService;
     private final AuthenticationManager authenticationManager;
 
     @Override
     public AuthenticationResponse register(RegisterRequest request) {
-        // Check if username already exists
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new IllegalArgumentException("Username already exists");
         }
 
-        // Create and save the new user
         var user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -38,7 +38,6 @@ public class AuthServiseimpl implements AuthServise {
 
         userRepository.save(user);
 
-        // Generate JWT token
         var jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse.builder()
@@ -49,22 +48,36 @@ public class AuthServiseimpl implements AuthServise {
 
     @Override
     public AuthenticationResponse authenticate(String username, String password) {
-        // Use the AuthenticationManager to authenticate
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
         );
 
-        // If authentication is successful, retrieve the user
-        var user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+        var userOpt = userRepository.findByUsername(username);
 
-        // Generate JWT token
-        var jwtToken = jwtService.generateToken(user);
+        if (userOpt.isPresent()) {
+            var user = userOpt.get();
+            var jwtToken = jwtService.generateToken(user);
+            return AuthenticationResponse.builder()
+                    .token(jwtToken)
+                    .username(user.getUsername())
+                    .build();
+        }
 
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .username(user.getUsername())
-                .build();
+        var driverOpt = driverRepository.findByEmail(username);
+
+        if (driverOpt.isPresent()) {
+            var driver = driverOpt.get();
+            if (!driver.isVerified()) {
+                throw new UsernameNotFoundException("Driver not verified by admin");
+            }
+            var jwtToken = jwtService.generateToken(driver);
+            return AuthenticationResponse.builder()
+                    .token(jwtToken)
+                    .username(driver.getUsername())
+                    .build();
+        }
+
+        throw new UsernameNotFoundException("User not found with username: " + username);
     }
 
     @Override
