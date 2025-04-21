@@ -1,6 +1,5 @@
 package edu.sliit.User_Management_Service_Microservices.utils;
 
-
 import edu.sliit.User_Management_Service_Microservices.document.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -17,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-
 @Component
 public class JWTService {
 
@@ -28,18 +26,39 @@ public class JWTService {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public String extractRole(String token) {
+        return extractAllClaims(token).get("role", String.class);
+    }
+
+    public Boolean extractIsVerified(String token) {
+        return extractAllClaims(token).get("isVerified", Boolean.class);
+    }
+
     public String generateToken(UserDetails userDetails) {
         User user = (User) userDetails;
         HashMap<String, Object> claims = new HashMap<>();
         claims.put("authorities", userDetails.getAuthorities());
+        claims.put("role", user.getRole());
         claims.put("typ", "access-token");
+
+        if ("DRIVER".equalsIgnoreCase(user.getRole())) {
+            claims.put("isVerified", user.isVerified());
+        }
+
         return generateToken(claims, userDetails);
     }
+
     public String generateRefreshToken(UserDetails userDetails) {
         User user = (User) userDetails;
         HashMap<String, Object> claims = new HashMap<>();
         claims.put("authorities", userDetails.getAuthorities());
+        claims.put("role", user.getRole());
         claims.put("typ", "refresh-token");
+
+        if ("DRIVER".equalsIgnoreCase(user.getRole())) {
+            claims.put("isVerified", user.isVerified());
+        }
+
         return generateRefreshToken(claims, userDetails);
     }
 
@@ -54,6 +73,13 @@ public class JWTService {
     }
 
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30)) // 30 days
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
+    }
+
+    private String generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30))
@@ -77,12 +103,4 @@ public class JWTService {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSigningKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
-    private String generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
-    }
-
 }
