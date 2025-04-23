@@ -1,4 +1,6 @@
 package edu.sliit.User_Management_Service_Microservices.dto;
+
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,8 +10,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthenticationResponse {
+public class TokenRequest {
     private String token;
-    private String role;
-    private String username;
 }

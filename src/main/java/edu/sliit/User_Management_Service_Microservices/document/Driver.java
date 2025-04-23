@@ -26,6 +26,8 @@ public class Driver implements UserDetails {
     private String firstName;
     private String lastName;
     private String email;
+    private double latitude;
+    private double longitude;
     private String phoneNumber;
     private String vehicleType;
     private String vehicleNo;
@@ -45,7 +47,7 @@ public class Driver implements UserDetails {
     private String vehicleRearPath;
     private String vehicleSidePath;
     private String vehicleColor;
-
+    private boolean available;
     private boolean isVerified = false;
 
     @Override
@@ -60,7 +62,7 @@ public class Driver implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email; // assuming login is via email
+        return email;
     }
 
     @Override

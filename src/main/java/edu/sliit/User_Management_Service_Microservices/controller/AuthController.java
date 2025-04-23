@@ -1,15 +1,17 @@
 package edu.sliit.User_Management_Service_Microservices.controller;
 
-import edu.sliit.User_Management_Service_Microservices.dto.AuthenticationRequest;
-import edu.sliit.User_Management_Service_Microservices.dto.AuthenticationResponse;
-import edu.sliit.User_Management_Service_Microservices.dto.RegisterRequest;
+import edu.sliit.User_Management_Service_Microservices.dto.*;
 
 import edu.sliit.User_Management_Service_Microservices.servise.AuthServise;
+import edu.sliit.User_Management_Service_Microservices.servise.impl.AuthServiseimpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthServise authService;
+    private static final Logger logger = LoggerFactory.getLogger(AuthServiseimpl.class);
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
@@ -32,5 +35,21 @@ public class AuthController {
     ) {
         return ResponseEntity.ok(authService.authenticate(request.getUsername(), request.getPassword()));
     }
+
+    @PostMapping("/verify")
+    public ResponseEntity<TokenValidationResponse> verifyToken(@RequestBody TokenRequest request) {
+        String token = request.getToken();
+        logger.info("Verifying token: {}", token);
+        try {
+            TokenValidationResponse response = authService.validateToken(token).block();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Token validation failed", e);
+            return ResponseEntity.ok(TokenValidationResponse.builder().valid(false).build());
+        }
+    }
+
+
+
 
 }
