@@ -1,6 +1,6 @@
 spring:
   application:
-    name: User-Management-Service-Microservices
+    name: User-Management-Service
   main:
     allow-bean-definition-overriding: true
   data:
@@ -17,7 +17,7 @@ eureka:
     prefer-ip-address: true
 
 server:
-  port: 8083
+  port: 8050
   servlet:
     context-path: /api/usermanager/
   error:

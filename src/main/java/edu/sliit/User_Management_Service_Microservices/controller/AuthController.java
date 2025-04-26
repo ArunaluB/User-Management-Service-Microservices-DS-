@@ -20,6 +20,7 @@ import reactor.core.publisher.Mono;
 public class AuthController {
 
     private final AuthServise authService;
+
     private static final Logger logger = LoggerFactory.getLogger(AuthServiseimpl.class);
 
     @PostMapping("/register")
@@ -48,8 +49,4 @@ public class AuthController {
             return ResponseEntity.ok(TokenValidationResponse.builder().valid(false).build());
         }
     }
-
-
-
-
 }
