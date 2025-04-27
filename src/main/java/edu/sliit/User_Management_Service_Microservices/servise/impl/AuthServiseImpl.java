@@ -55,6 +55,37 @@ public class AuthServiseImpl implements AuthServise {
     }
 
     @Override
+    public AuthenticationResponse registerAdmin(RegisterRequest request) {
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+
+        var user = User.builder()
+                .username(request.getUsername())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .fullName(request.getFullName())
+                .phone(request.getPhone())
+                .email(request.getEmail())
+                .role("ADMIN")
+                .isVerified(false)
+                .build();
+
+        userRepository.save(user);
+
+        var jwtToken = jwtService.generateToken(user);
+
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .username(user.getUsername())
+                .fullName(user.getFullName())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .build();
+    }
+
+
+    @Override
     public AuthenticationResponse authenticate(String username, String rawPassword) {
         User user = userRepository.findByUsername(username);
         if (user == null) {
