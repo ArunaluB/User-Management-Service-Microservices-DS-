@@ -24,7 +24,7 @@ public class DriverServiceImpl implements DriverService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final  RestTemplate restTemplate;
-    private static final Logger logger = LoggerFactory.getLogger(AuthServiseimpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthServiseImpl.class);
 
     private final String DRIVER_SERVICE_URL = "http://localhost:8083/api/drivermanager/api/driver";
 

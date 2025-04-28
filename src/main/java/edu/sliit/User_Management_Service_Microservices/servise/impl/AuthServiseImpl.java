@@ -9,7 +9,6 @@ import edu.sliit.User_Management_Service_Microservices.repository.UserRepository
 import edu.sliit.User_Management_Service_Microservices.servise.AuthServise;
 import edu.sliit.User_Management_Service_Microservices.utils.JWTService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,13 +17,12 @@ import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
-public class AuthServiseimpl implements AuthServise {
+public class AuthServiseImpl implements AuthServise {
 
     private final UserRepository userRepository;
     private final DriverRepository driverRepository;
     private final PasswordEncoder passwordEncoder;
     private final JWTService jwtService;
-    private final AuthenticationManager authenticationManager;
 
     @Override
     public AuthenticationResponse register(RegisterRequest request) {
@@ -38,8 +36,8 @@ public class AuthServiseimpl implements AuthServise {
                 .fullName(request.getFullName())
                 .phone(request.getPhone())
                 .email(request.getEmail())
-                .role("USER") // Default role; adjust as needed
-                .isVerified(false) // Default to false; set to true if verified during registration
+                .role("USER")
+                .isVerified(false)
                 .build();
 
         userRepository.save(user);
@@ -58,20 +56,13 @@ public class AuthServiseimpl implements AuthServise {
 
     @Override
     public AuthenticationResponse authenticate(String username, String rawPassword) {
-        var userOpt = userRepository.findByUsername(username);
-
-        if (userOpt.isEmpty()) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
 
-        var user = userOpt.get();
-
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new BadCredentialsException("Invalid password");
-        }
-
-        if (!user.isEnabled()) {
-            throw new IllegalStateException("User account is not verified");
         }
 
         var jwtToken = jwtService.generateToken(user);
@@ -88,8 +79,11 @@ public class AuthServiseimpl implements AuthServise {
 
     @Override
     public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
+        return user;
     }
 
     @Override
