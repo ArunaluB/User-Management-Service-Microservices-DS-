@@ -35,6 +35,11 @@ public class AuthServiseimpl implements AuthServise {
         var user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .fullName(request.getFullName())
+                .phone(request.getPhone())
+                .email(request.getEmail())
+                .role("USER") // Default role; adjust as needed
+                .isVerified(false) // Default to false; set to true if verified during registration
                 .build();
 
         userRepository.save(user);
@@ -44,12 +49,15 @@ public class AuthServiseimpl implements AuthServise {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .username(user.getUsername())
+                .fullName(user.getFullName())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .role(user.getRole())
                 .build();
     }
 
     @Override
     public AuthenticationResponse authenticate(String username, String rawPassword) {
-        // Find user by username
         var userOpt = userRepository.findByUsername(username);
 
         if (userOpt.isEmpty()) {
@@ -58,34 +66,34 @@ public class AuthServiseimpl implements AuthServise {
 
         var user = userOpt.get();
 
-        // Use PasswordEncoder to check raw password vs encoded password
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new BadCredentialsException("Invalid password");
         }
 
-        // Generate token after password is verified
+        if (!user.isEnabled()) {
+            throw new IllegalStateException("User account is not verified");
+        }
+
         var jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
-                .role(user.getRole())
                 .username(user.getUsername())
+                .fullName(user.getFullName())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .role(user.getRole())
                 .build();
     }
-
 
     @Override
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
+
     @Override
     public Mono<TokenValidationResponse> validateToken(String token) {
         return jwtService.validateToken(token);
     }
-
-//    @Override
-//    public String Token(String username ,String password) {
-//        return jwtService.;
-//    }
 }
