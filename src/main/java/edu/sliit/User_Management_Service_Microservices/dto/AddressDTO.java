@@ -1,6 +1,7 @@
 package edu.sliit.User_Management_Service_Microservices.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,21 +12,25 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class AddressDTO {
-    @NotBlank
+    @NotBlank(message = "Street is required")
     private String street;
 
-    @NotBlank
+    @NotBlank(message = "City is required")
     private String city;
 
-    @NotBlank
+    @NotBlank(message = "State is required")
     private String state;
 
-    @NotBlank
+    @NotBlank(message = "Zip code is required")
     private String zipCode;
 
-    private String landmark; // Optional landmark
+    private String landmark;
 
-    private Double latitude; // Optional for geolocation
+    @NotNull(message = "Latitude is required")
+    private Double latitude;
 
-    private Double longitude; // Optional for geolocation
+    @NotNull(message = "Longitude is required")
+    private Double longitude;
+
+
 }

@@ -1,7 +1,5 @@
 package edu.sliit.User_Management_Service_Microservices.controller;
-
 import edu.sliit.User_Management_Service_Microservices.dto.*;
-
 import edu.sliit.User_Management_Service_Microservices.servise.AuthServise;
 import edu.sliit.User_Management_Service_Microservices.servise.impl.AuthServiseimpl;
 import jakarta.validation.Valid;
@@ -11,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -20,7 +17,6 @@ import reactor.core.publisher.Mono;
 public class AuthController {
 
     private final AuthServise authService;
-
     private static final Logger logger = LoggerFactory.getLogger(AuthServiseimpl.class);
 
     @PostMapping("/register")
@@ -49,4 +45,8 @@ public class AuthController {
             return ResponseEntity.ok(TokenValidationResponse.builder().valid(false).build());
         }
     }
+
+
+
+
 }

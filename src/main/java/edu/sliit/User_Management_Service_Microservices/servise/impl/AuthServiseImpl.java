@@ -9,7 +9,6 @@ import edu.sliit.User_Management_Service_Microservices.repository.UserRepository
 import edu.sliit.User_Management_Service_Microservices.servise.AuthServise;
 import edu.sliit.User_Management_Service_Microservices.utils.JWTService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,13 +17,12 @@ import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
-public class AuthServiseimpl implements AuthServise {
+public class AuthServiseImpl implements AuthServise {
 
     private final UserRepository userRepository;
     private final DriverRepository driverRepository;
     private final PasswordEncoder passwordEncoder;
     private final JWTService jwtService;
-    private final AuthenticationManager authenticationManager;
 
     @Override
     public AuthenticationResponse register(RegisterRequest request) {
@@ -35,6 +33,11 @@ public class AuthServiseimpl implements AuthServise {
         var user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .fullName(request.getFullName())
+                .phone(request.getPhone())
+                .email(request.getEmail())
+                .role("USER")
+                .isVerified(false)
                 .build();
 
         userRepository.save(user);
@@ -44,48 +47,47 @@ public class AuthServiseimpl implements AuthServise {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .username(user.getUsername())
+                .fullName(user.getFullName())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .role(user.getRole())
                 .build();
     }
 
     @Override
     public AuthenticationResponse authenticate(String username, String rawPassword) {
-        // Find user by username
-        var userOpt = userRepository.findByUsername(username);
-
-        if (userOpt.isEmpty()) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
 
-        var user = userOpt.get();
-
-        // Use PasswordEncoder to check raw password vs encoded password
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new BadCredentialsException("Invalid password");
         }
 
-        // Generate token after password is verified
         var jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
-                .role(user.getRole())
                 .username(user.getUsername())
+                .fullName(user.getFullName())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .role(user.getRole())
                 .build();
     }
 
-
     @Override
     public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
+        return user;
     }
+
     @Override
     public Mono<TokenValidationResponse> validateToken(String token) {
         return jwtService.validateToken(token);
     }
-
-//    @Override
-//    public String Token(String username ,String password) {
-//        return jwtService.;
-//    }
 }

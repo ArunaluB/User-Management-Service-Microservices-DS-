@@ -24,9 +24,9 @@ public class DriverServiceImpl implements DriverService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final  RestTemplate restTemplate;
-    private static final Logger logger = LoggerFactory.getLogger(AuthServiseimpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthServiseImpl.class);
 
-    private final String DRIVER_SERVICE_URL = "http://localhost:8083/api/drivermanager/api/driver";
+    private final String DRIVER_SERVICE_URL = "http://localhost:8080/api/drivermanager/api/driver";
 
     @Override
     public Driver registerDriver(requestDriverDto requestDriverDto) {
@@ -44,12 +44,11 @@ public class DriverServiceImpl implements DriverService {
         logger.info("Driver registered dddddddddddddd", registeredDriver);
         logger.info("User authenticated successfully: {}", registeredDriver.getUsername());
         if (registeredDriver != null) {
-            // 3. Create User object and save in local MongoDB
             User user = User.builder()
                     .username(requestDriverDto.getUsername())
                     .fullName(requestDriverDto.getFirstName())
                     .password(requestDriverDto.getPassword())
-                    .role("DRIVER")  // or set from DTO if dynamic
+                    .role("DRIVER")
                     .isVerified(false)
                     .build();
 
