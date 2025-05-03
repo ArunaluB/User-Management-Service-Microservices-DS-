@@ -26,10 +26,8 @@ public class AddressDTO {
 
     private String landmark;
 
-    @NotNull(message = "Latitude is required")
     private Double latitude;
 
-    @NotNull(message = "Longitude is required")
     private Double longitude;
 
 

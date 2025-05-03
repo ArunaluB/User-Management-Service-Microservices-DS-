@@ -1,7 +1,7 @@
 package edu.sliit.User_Management_Service_Microservices.controller;
 import edu.sliit.User_Management_Service_Microservices.dto.*;
 import edu.sliit.User_Management_Service_Microservices.servise.AuthServise;
-import edu.sliit.User_Management_Service_Microservices.servise.impl.AuthServiseimpl;
+import edu.sliit.User_Management_Service_Microservices.servise.impl.AuthServiseImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthServise authService;
-    private static final Logger logger = LoggerFactory.getLogger(AuthServiseimpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthServiseImpl.class);
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(

@@ -7,6 +7,7 @@ spring:
     mongodb:
       uri: mongodb+srv://arunalubamunusinghe75:Arunalu123@cluster0.n5poqff.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
       database: Snap-Eats
+
 eureka:
   client:
     service-url:
@@ -18,8 +19,8 @@ eureka:
 
 server:
   port: 8050
-  servlet:
-    context-path: /api/usermanager/
+#  servlet:
+#    context-path: /api/usermanager/
   error:
     include-exception: true
     include-message: always
