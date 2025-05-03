@@ -39,6 +39,7 @@ public class AuthServiseImpl implements AuthServise {
                 .fullName(request.getFullName())
                 .phone(request.getPhone())
                 .email(request.getEmail())
+                .address(request.getAddress())
                 .role("USER")
                 .isVerified(false)
                 .build();
@@ -48,6 +49,7 @@ public class AuthServiseImpl implements AuthServise {
         var jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse.builder()
+                .id(user.getId())
                 .token(jwtToken)
                 .username(user.getUsername())
                 .fullName(user.getFullName())
@@ -78,6 +80,7 @@ public class AuthServiseImpl implements AuthServise {
         var jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse.builder()
+                .id(user.getId())
                 .token(jwtToken)
                 .username(user.getUsername())
                 .fullName(user.getFullName())
@@ -111,6 +114,7 @@ public AuthenticationResponse authenticate(String username, String rawPassword) 
         UsernameDriverResponse availableDrivers = response.getBody();
 
         return AuthenticationResponse.builder()
+                .id(user.getId())
                 .token(jwtToken)
                 .username(availableDrivers.getUsername())
                 .fullName(user.getFullName())
@@ -121,6 +125,7 @@ public AuthenticationResponse authenticate(String username, String rawPassword) 
                 .build();
     } else {
         return AuthenticationResponse.builder()
+                .id(user.getId())
                 .token(jwtToken)
                 .username(user.getUsername())
                 .fullName(user.getFullName())

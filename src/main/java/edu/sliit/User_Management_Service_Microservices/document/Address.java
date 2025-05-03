@@ -13,10 +13,10 @@ public class Address {
     private String street;
     private String city;
     private String state;
-    private String postalCode;
-    private String country;
+    private String postalCode = "1021";
+    private String country = "Sri Lanka";
     private String zipCode;
-    private String landmark; // Optional landmark
+    private String landmark = ""; // Optional landmark
     private Double latitude; // Optional for geolocation
     private Double longitude; // Optional for geolocation
 }

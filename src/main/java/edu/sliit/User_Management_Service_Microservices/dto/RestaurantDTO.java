@@ -1,5 +1,6 @@
 package edu.sliit.User_Management_Service_Microservices.dto;
 
+import edu.sliit.User_Management_Service_Microservices.document.Address;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -28,7 +28,7 @@ public class User implements UserDetails {
     private String email;
     private String password;
     private String role;
-    private Address address;
+    private Address address = new Address();
     private boolean isVerified;
 
     @Override
