@@ -30,7 +30,7 @@ public class DriverController {
     public ResponseEntity<AuthenticationResponse> authenticate(
             @Valid @RequestBody AuthenticationRequest request
     ) {
-        return ResponseEntity.ok(authService.authenticate(request.getUsername(), request.getPassword()));
+        return ResponseEntity.ok((AuthenticationResponse) authService.authenticate(request.getUsername(), request.getPassword()));
     }
 
 }

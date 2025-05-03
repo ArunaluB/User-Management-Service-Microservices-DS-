@@ -9,6 +9,7 @@ import reactor.core.publisher.Mono;
 
 public interface AuthServise {
      AuthenticationResponse register(RegisterRequest request);
+     AuthenticationResponse registerAdmin(RegisterRequest request);
      AuthenticationResponse authenticate(String username, String password);
      User getUserByUsername(String username);
      Mono<TokenValidationResponse> validateToken(String token);
