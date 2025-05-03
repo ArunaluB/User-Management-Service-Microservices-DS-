@@ -9,12 +9,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthenticationResponse {
-    private String token;
-    private String username;
-    private String fullName;
-    private String phone;
+public class UsernameDriverResponse {
+    private Long id;
+    private String name;
     private String email;
-    private String role;
+    private String phoneNumber;
+    private String username;
     private String profileImage;
+    private boolean isVerified = false;
+
 }
