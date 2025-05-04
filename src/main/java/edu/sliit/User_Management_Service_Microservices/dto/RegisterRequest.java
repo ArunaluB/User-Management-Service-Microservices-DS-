@@ -1,5 +1,6 @@
 package edu.sliit.User_Management_Service_Microservices.dto;
 
+import edu.sliit.User_Management_Service_Microservices.document.Address;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -36,4 +37,6 @@ public class RegisterRequest {
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
+
+    private Address address = new Address();
 }
